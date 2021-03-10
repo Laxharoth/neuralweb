@@ -54,10 +54,10 @@ class derivative_function : public function
 		/*
 		*	Creates an object which is the derivative(aproximation)
 		*	of another function (is possible to get the derivatives derivative)
-		*	@param outer_function Is the original function
+		*	@param original_function Is the original function
 		*	@return A function being the derivative of the original function
 		*/
-		derivative_function(function* outer_function);
+		derivative_function(function* original_function);
 		/*
 		*	Gets the slope of the original function at a given point x
 		*	@param x The point in which the slope will be calculated
@@ -66,7 +66,7 @@ class derivative_function : public function
 		virtual double evaluate(double x);
 	private:
 		//The original function
-		function* outer_function;
+		function* original_function;
 };
 
 #endif // FUNCTION_HPP

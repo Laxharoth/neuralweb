@@ -53,11 +53,11 @@ double function::operator()(double x){
 /*
 *	Creates an object which is the derivative(aproximation)
 *	of another function (is possible to get the derivatives derivative)
-*	@param outer_function Is the original function
+*	@param original_function Is the original function
 *	@return A function being the derivative of the original function
 */
-derivative_function::derivative_function(function* outer_function):
-outer_function(outer_function){};
+derivative_function::derivative_function(function* original_function):
+original_function(original_function){};
 
 /*
 *	Gets the slope of the original function at a given point x
@@ -66,5 +66,5 @@ outer_function(outer_function){};
 */
 double derivative_function::evaluate(double x)
 {
-	return ((this->outer_function->evaluate(x+h)-this->outer_function->evaluate(x))/h);
+	return ((this->original_function->evaluate(x+h)-this->original_function->evaluate(x))/h);
 }
