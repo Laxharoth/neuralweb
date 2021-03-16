@@ -9,7 +9,7 @@ class web
 public:
 	web(unsigned int p_num_layers,unsigned int* p_layers_size, function*** p_function_input, function*** p_function_activation, function*** p_function_output,double** p_umbral,rand_dist &distribution,rand_gen &generator);
 	web(unsigned int p_num_layers,unsigned int* p_layers_size, function*** p_function_input, function*** p_function_activation, function*** p_function_output,double** p_umbral, double*** p_weights);
-	web(web &other) = delete;
+	
 	~web();
 
 	double* Evaluate(double* p_inputs);
