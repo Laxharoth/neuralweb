@@ -32,9 +32,7 @@ previous_layer_neurons_number(0),
 umbral(0.0)
 {}
 neuron::~neuron()
-{
-	delete[] this->weights;
-}
+{}
 
 double neuron::Input()
 {
@@ -53,6 +51,14 @@ double neuron::Output()
 {
 	this->last_output =  this->output_function->evaluate(this->Activation());
 	return this->last_output;
+}
+unsigned int neuron::get_inputs_number()
+{
+	return this->previous_layer_neurons_number;
+}
+double neuron::get_umbral()
+{
+	return this->umbral;
 }
 double neuron::get_weight(unsigned int position)
 {

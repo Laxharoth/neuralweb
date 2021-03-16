@@ -18,6 +18,8 @@ public:
 	~neuron();
 	
 	double Output();
+	unsigned int get_inputs_number();
+	double get_umbral();
 	double get_weight(unsigned int position);
 	void set_weight(unsigned int position, double new_weight);
 private:
