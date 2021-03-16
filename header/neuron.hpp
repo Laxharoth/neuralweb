@@ -14,7 +14,6 @@ class neuron
 public:
 	neuron(function* p_input_function, function* p_activation_function, function* p_output_function, double* p_inputs, unsigned int p_previous_layer_neurons_number, double p_umbral,rand_dist &distribution,rand_gen &generator);
 	neuron(function* p_input_function, function* p_activation_function, function* p_output_function, double* p_inputs, unsigned int p_previous_layer_neurons_number, double p_umbral, double* p_weights);
-	neuron();
 	~neuron();
 	
 	double Output();

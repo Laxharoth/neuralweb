@@ -27,12 +27,10 @@ umbral(p_umbral)
 	this->weights = new double[v_prev_layer_size];
 	std::memcpy(this->weights,p_weights,sizeof(double)*v_prev_layer_size);
 }
-neuron::neuron():
-previous_layer_neurons_number(0),
-umbral(0.0)
-{}
 neuron::~neuron()
-{}
+{
+	delete[] weights;
+}
 
 double neuron::Input()
 {
