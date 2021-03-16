@@ -1,4 +1,7 @@
-*.dll
-*.exe
-*.o
-*.a
+*
+!header/
+!src/
+!header/*
+!src/*
+!compile*
+!test*
