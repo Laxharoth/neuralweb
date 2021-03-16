@@ -47,13 +47,17 @@ double* web::Evaluate(double* p_inputs)
 	return this->inputs[this->num_layers];
 }
 
+unsigned int web::get_num_layers()
+{
+	return this->num_layers;
+}
 unsigned int web::get_input_size()
 {
 	return this->input_size;
 }
 unsigned int web::get_output_size()
 {
-	return this->input_size;
+	return this->output_size;
 }
 double* web::get_outputs()
 {

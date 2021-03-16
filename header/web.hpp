@@ -14,6 +14,7 @@ public:
 
 	double* Evaluate(double* p_inputs);
 	
+	unsigned int get_num_layers();
 	unsigned int get_input_size();
 	unsigned int get_output_size();
 	double* get_outputs();
