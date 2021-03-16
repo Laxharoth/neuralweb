@@ -6,12 +6,12 @@ layer::layer(unsigned int p_neuron_number,function** p_function_input, function*
 neurons_number(p_neuron_number),
 previous_layer_neurons_number(p_previous_layer_neurons_number)
 {
-	this->neurons = new neuron[p_neuron_number];
+	this->neurons = new neuron*[p_neuron_number];
 	this->inputs  = new double[p_previous_layer_neurons_number];
 	
 	for (unsigned int i = 0; i < this->neurons_number; ++i)
 	{
-		this->neurons[i] = neuron(p_function_input[i],
+		this->neurons[i] = new neuron(p_function_input[i],
 			p_function_activation[i],
 			p_function_output[i],
 			this->inputs,
@@ -26,12 +26,12 @@ layer::layer(unsigned int p_neuron_number,function** p_function_input, function*
 neurons_number(p_neuron_number),
 previous_layer_neurons_number(p_previous_layer_neurons_number)
 {
-	this->neurons = new neuron[this->neurons_number];
+	this->neurons = new neuron*[this->neurons_number];
 	this->inputs  = new double[this->previous_layer_neurons_number];
 
 	for (unsigned int i = 0; i < p_neuron_number; ++i)
 	{
-		this->neurons[i] = neuron(p_function_input[i],
+		this->neurons[i] = new neuron(p_function_input[i],
 			p_function_activation[i],
 			p_function_output[i],
 			this->inputs,
@@ -45,7 +45,7 @@ layer::layer(unsigned int p_neuron_number,function** p_function_input, function*
 neurons_number(p_neuron_number),
 previous_layer_neurons_number(FIRST_LAYER_PREVIOUS_NEURON_NUMBER)
 {
-	this->neurons = new neuron[this->neurons_number];
+	this->neurons = new neuron*[this->neurons_number];
 	this->inputs  = new double[this->previous_layer_neurons_number];
 	
 	double weights[this->previous_layer_neurons_number]{};
@@ -54,7 +54,7 @@ previous_layer_neurons_number(FIRST_LAYER_PREVIOUS_NEURON_NUMBER)
 
 	for (unsigned int i = 0; i < this->neurons_number; ++i)
 	{
-		this->neurons[i] = neuron(p_function_input[i],
+		this->neurons[i] = new neuron(p_function_input[i],
 			p_function_activation[i],
 			p_function_output[i],
 			this->inputs+i,
@@ -64,13 +64,9 @@ previous_layer_neurons_number(FIRST_LAYER_PREVIOUS_NEURON_NUMBER)
 			);
 	}
 }
-layer::layer():
-neurons_number(0),
-previous_layer_neurons_number(0)
-{}
 
-layer layer::build_first_layer(unsigned int p_neuron_number,function** p_function_input, function** p_function_activation, function** p_function_output, double* p_umbral)
-{return layer(p_neuron_number,p_function_input,p_function_activation,p_function_output,p_umbral);}
+layer* layer::build_first_layer(unsigned int p_neuron_number,function** p_function_input, function** p_function_activation, function** p_function_output, double* p_umbral)
+{return new layer(p_neuron_number,p_function_input,p_function_activation,p_function_output,p_umbral);}
 
 unsigned int layer::get_layer_size()
 {
@@ -79,7 +75,7 @@ unsigned int layer::get_layer_size()
 neuron* layer::get_neuron(const unsigned int position)
 {
 	if(position>=this->neurons_number) return nullptr;
-	return this->neurons+position;
+	return this->neurons[position];
 }
 double* layer::get_inputs()
 {
@@ -93,10 +89,15 @@ void layer::put_outputs(double* outputs)
 {
 	std::thread threads[this->neurons_number];
 	for (unsigned int i = 0; i < this->neurons_number; ++i)
-		threads[i] = std::thread([&outputs,i](layer* l){outputs[i] = l->neurons[i].Output();},this);
+		threads[i] = std::thread([&outputs,i](layer* l){outputs[i] = l->neurons[i]->Output();},this);
 	for (auto& t:threads)
 		t.join();
 }
 
 layer::~layer()
-{}
+{
+	for (int i = 0; i < this->neurons_number; ++i)
+		delete this->neurons[i];
+	delete[] neurons;
+	delete[] inputs;
+}

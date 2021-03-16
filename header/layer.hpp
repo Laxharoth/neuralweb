@@ -14,7 +14,7 @@ public:
 	
 	layer(unsigned int p_neuron_number,function** p_function_input, function** p_function_activation, function** p_function_output, double* p_umbral, unsigned int previous_layer_neurons_number,rand_dist &distribution,rand_gen &generator);
 	layer(unsigned int p_neuron_number,function** p_function_input, function** p_function_activation, function** p_function_output, double* p_umbral, unsigned int previous_layer_neurons_number, double** p_weights);
-	layer();
+	
 	~layer();
 
 	unsigned int get_layer_size();
@@ -23,11 +23,11 @@ public:
 	void put_outputs(double* outputs);
 	double* get_inputs();
 
-	static layer build_first_layer(unsigned int p_neuron_number,function** p_function_input, function** p_function_activation, function** p_function_output, double* p_umbral);
+	static layer* build_first_layer(unsigned int p_neuron_number,function** p_function_input, function** p_function_activation, function** p_function_output, double* p_umbral);
 private:
 	static const unsigned int FIRST_LAYER_PREVIOUS_NEURON_NUMBER;
 	
-	neuron* neurons;
+	neuron** neurons;
 	double* inputs;
 	unsigned int neurons_number;
 	unsigned int previous_layer_neurons_number;
