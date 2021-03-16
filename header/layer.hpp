@@ -11,13 +11,13 @@ class layer
 {
 public:
 	static const bool IS_FIRST_LAYER;
-
-
+	
 	layer(unsigned int p_neuron_number,function** p_function_input, function** p_function_activation, function** p_function_output, double* p_umbral, unsigned int previous_layer_neurons_number,rand_dist &distribution,rand_gen &generator);
 	layer(unsigned int p_neuron_number,function** p_function_input, function** p_function_activation, function** p_function_output, double* p_umbral, unsigned int previous_layer_neurons_number, double** p_weights);
 	layer();
 	~layer();
 
+	unsigned int get_layer_size();
 	neuron* get_neuron(unsigned int position);
 	void set_inputs(double* p_inputs);
 	void put_outputs(double* outputs);
@@ -31,9 +31,8 @@ private:
 	double* inputs;
 	unsigned int neurons_number;
 	unsigned int previous_layer_neurons_number;
-	
+		
 	layer(unsigned int p_neuron_number,function** p_function_input, function** p_function_activation, function** p_function_output, double* p_umbral);
-	
 	void evaluate_neuron_into_output(unsigned int position, double*& output);
 };
 

@@ -72,6 +72,10 @@ previous_layer_neurons_number(0)
 layer layer::build_first_layer(unsigned int p_neuron_number,function** p_function_input, function** p_function_activation, function** p_function_output, double* p_umbral)
 {return layer(p_neuron_number,p_function_input,p_function_activation,p_function_output,p_umbral);}
 
+unsigned int layer::get_layer_size()
+{
+	return this->neurons_number;
+}
 neuron* layer::get_neuron(const unsigned int position)
 {
 	if(position>=this->neurons_number) return nullptr;
@@ -95,7 +99,4 @@ void layer::put_outputs(double* outputs)
 }
 
 layer::~layer()
-{
-	delete[] this->neurons;
-	delete[] this->inputs;
-}
+{}
