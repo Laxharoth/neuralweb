@@ -21,7 +21,7 @@ public:
 	layer* get_layer(int position);
 
 private:
-	layer* layers;
+	layer** layers;
 	double** inputs;
 	unsigned int input_size;
 	unsigned int output_size;

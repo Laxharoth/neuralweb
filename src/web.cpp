@@ -5,14 +5,14 @@ num_layers(p_num_layers),
 input_size(p_layers_size[0]),
 output_size(p_layers_size[p_num_layers-1])
 {
-	this->layers = new layer[this->num_layers];
+	this->layers = new layer*[this->num_layers];
 	this->inputs = new double*[this->num_layers+1];
 	this->layers[0] = layer::build_first_layer(p_layers_size[0],p_function_input[0],p_function_activation[0],p_function_output[0],p_umbral[0]);
-	this->inputs[0] = this->layers[0].get_inputs();
+	this->inputs[0] = this->layers[0]->get_inputs();
 	for (unsigned int i = 1; i < this->num_layers; ++i)
 	{
-		this->layers[i] = layer(p_layers_size[i],p_function_input[i],p_function_activation[i],p_function_output[i],p_umbral[i],p_layers_size[i-1],distribution,generator);
-		this->inputs[i] = this->layers[i].get_inputs();
+		this->layers[i] = new layer(p_layers_size[i],p_function_input[i],p_function_activation[i],p_function_output[i],p_umbral[i],p_layers_size[i-1],distribution,generator);
+		this->inputs[i] = this->layers[i]->get_inputs();
 	}
 	this->inputs[this->num_layers] = new double[this->output_size];
 }
@@ -21,19 +21,21 @@ num_layers(p_num_layers),
 input_size(p_layers_size[0]),
 output_size(p_layers_size[p_num_layers-1])
 {
-	this->layers = new layer[this->num_layers];
+	this->layers = new layer*[this->num_layers];
 	this->inputs = new double*[this->num_layers+1];
 	this->layers[0] = layer::build_first_layer(p_layers_size[0],p_function_input[0],p_function_activation[0],p_function_output[0],p_umbral[0]);
-	this->inputs[0] = this->layers[0].get_inputs();
+	this->inputs[0] = this->layers[0]->get_inputs();
 	for (unsigned int i = 1; i < this->num_layers; ++i)
 	{
-		this->layers[i] = layer(p_layers_size[i],p_function_input[i],p_function_activation[i],p_function_output[i],p_umbral[i],p_layers_size[i-1],p_weights[i]);
-		this->inputs[i] = this->layers[i].get_inputs();
+		this->layers[i] = new layer(p_layers_size[i],p_function_input[i],p_function_activation[i],p_function_output[i],p_umbral[i],p_layers_size[i-1],p_weights[i]);
+		this->inputs[i] = this->layers[i]->get_inputs();
 	}
 	this->inputs[this->num_layers] = new double[this->output_size];
 }
 web::~web()
 {
+	for (int i = 0; i < this->num_layers; ++i)
+		delete this->layers[i];
 	delete[] this->layers;
 	delete[] this->inputs[this->output_size];
 	delete[] this->inputs;
@@ -41,9 +43,9 @@ web::~web()
 
 double* web::Evaluate(double* p_inputs)
 {
-	this->layers[0].set_inputs(p_inputs);
+	this->layers[0]->set_inputs(p_inputs);
 	for (unsigned int i = 0; i < this->num_layers; ++i)
-		this->layers[i].put_outputs(this->inputs[i+1]);
+		this->layers[i]->put_outputs(this->inputs[i+1]);
 	return this->inputs[this->num_layers];
 }
 
@@ -66,5 +68,5 @@ double* web::get_outputs()
 layer* web::get_layer(int position)
 {
 	if(position>=this->num_layers)return nullptr;
-	return this->layers+position;
+	return this->layers[position];
 }
