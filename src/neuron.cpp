@@ -9,7 +9,7 @@ previous_layer_neurons_number(p_previous_layer_neurons_number),
 umbral(p_umbral)
 {
 	const int v_prev_layer_size = this->previous_layer_neurons_number;
-	this->last_output = 0.0;
+	this->last_activation = 0.0;
 	this->weights = new double[v_prev_layer_size];
 	for (unsigned int i = 0; i < (v_prev_layer_size); ++i)
 		weights[i] = distribution(generator);
@@ -23,7 +23,7 @@ previous_layer_neurons_number(p_previous_layer_neurons_number),
 umbral(p_umbral)
 {
 	const int v_prev_layer_size = this->previous_layer_neurons_number;
-	this->last_output = 0.0;
+	this->last_activation = 0.0;
 	this->weights = new double[v_prev_layer_size];
 	std::memcpy(this->weights,p_weights,sizeof(double)*v_prev_layer_size);
 }
@@ -43,12 +43,12 @@ double neuron::Input()
 }
 double neuron::Activation()
 {
-	return this->activation_function->evaluate(this->Input());
+	this->last_activation = this->activation_function->evaluate(this->Input());
+	return this->last_activation;
 }
 double neuron::Output()
 {
-	this->last_output =  this->output_function->evaluate(this->Activation());
-	return this->last_output;
+	return this->output_function->evaluate(this->Activation());
 }
 unsigned int neuron::get_inputs_number()
 {
@@ -67,4 +67,12 @@ void neuron::set_weight(unsigned int position, double new_weight)
 {
 	if(position>=this->previous_layer_neurons_number) return;
 	this->weights[position] = new_weight;
+}
+double neuron::get_input(unsigned int position)
+{
+	return this->inputs[position];
+}
+double neuron::get_last_activation()
+{
+	return this->last_activation;
 }
