@@ -2,9 +2,9 @@
 
 void save(web &myweb)
 {
-	const int filename_buffer_size  = 19;
+	const int filename_buffer_size  = 26;
 	char filename_buffer[filename_buffer_size];
-	const char* format = "%Y%m%d%H%M%S.dat\0";
+	const char* format = "backup\\%Y%m%d%H%M%S.dat\0";
 	auto current_time_chrono = std::chrono::system_clock::now();
 	std::time_t current_time = std::chrono::system_clock::to_time_t(current_time_chrono);
 	std::strftime(filename_buffer,filename_buffer_size,format, std::localtime(&current_time));
@@ -28,6 +28,57 @@ void save(web &myweb)
 	{
 		//Get layer number of neurons in layer
 		current_layer = myweb.get_layer(i);
+		neuron_size = current_layer->get_layer_size();
+		output_file.write(CAST2CHARPTR(neuron_size),sizeof(int));
+		//Write every neuron
+		for (unsigned int j = 0; j < neuron_size; ++j)
+		{
+			//Get number of inputs(weights) in neuron
+			current_neuron = current_layer->get_neuron(j);
+			input_size = current_neuron->get_inputs_number();
+			output_file.write(CAST2CHARPTR(input_size),sizeof(int));
+			//Write neuron umbral;
+			current_umbral = current_neuron->get_umbral();
+			output_file.write(CAST2CHARPTR(current_umbral),sizeof(double));
+			//Write every weight
+			for (int k = 0; k < input_size; ++k)
+			{
+				current_weight = current_neuron->get_weight(k);
+				output_file.write(CAST2CHARPTR(current_weight),sizeof(double));
+			}
+		}
+	}
+	//Close file
+	output_file.close();
+}
+void save(web* myweb)
+{
+	const int filename_buffer_size  = 19;
+	char filename_buffer[filename_buffer_size];
+	const char* format = "%Y%m%d%H%M%S.dat\0";
+	auto current_time_chrono = std::chrono::system_clock::now();
+	std::time_t current_time = std::chrono::system_clock::to_time_t(current_time_chrono);
+	std::strftime(filename_buffer,filename_buffer_size,format, std::localtime(&current_time));
+
+	unsigned int n_layers = myweb->get_num_layers();
+	unsigned int input_size{};
+	unsigned int neuron_size{};
+	double current_weight{};
+	double current_umbral{};
+	layer* current_layer{};
+	neuron* current_neuron{};
+
+	//Open file
+	std::ofstream output_file(filename_buffer,std::ios::binary|std::ios::out);
+	//If is not open abort
+	if(!output_file.is_open())return;
+	//Save the number of layers
+	output_file.write(CAST2CHARPTR(n_layers),sizeof(int));
+	//Write every layer
+	for (unsigned int i = 0; i < n_layers; ++i)
+	{
+		//Get layer number of neurons in layer
+		current_layer = myweb->get_layer(i);
 		neuron_size = current_layer->get_layer_size();
 		output_file.write(CAST2CHARPTR(neuron_size),sizeof(int));
 		//Write every neuron
