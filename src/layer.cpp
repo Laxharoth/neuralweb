@@ -87,8 +87,9 @@ void layer::set_inputs(double* p_inputs)
 }
 void layer::put_outputs(double* outputs)
 {
-	std::thread threads[this->neurons_number];
-	for (unsigned int i = 0; i < this->neurons_number; ++i)
+	const int neurons_number=this->neurons_number;
+	std::thread threads[neurons_number];
+	for (unsigned int i = 0; i < neurons_number; ++i)
 		threads[i] = std::thread([&outputs,i](layer* l){outputs[i] = l->neurons[i]->Output();},this);
 	for (auto& t:threads)
 		t.join();
