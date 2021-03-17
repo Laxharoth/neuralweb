@@ -1,6 +1,7 @@
 #include "function.hpp"
 #include "web.hpp"
 #include "web_file_handle.hpp"
+#include "backpropagation.hpp"
 
 #include <iostream>
 #include <cmath>
@@ -9,6 +10,7 @@
 #include <random>
 #include <chrono>
 #include <cstring>
+#include <thread>
 
 #define e 2.718281828459045235360
 
@@ -40,10 +42,13 @@ int main()
 	std::uniform_real_distribution<double> web_distribution(0.0,0.3);
 	std::mt19937_64 web_generator(std::chrono::system_clock::now().time_since_epoch().count());
 
-	unsigned int num_layer = 4;
+	unsigned int num_layer = 3;
 
 	unsigned int* layers_size = new unsigned int[num_layer];
-	layers_size[0] = 2;layers_size[1] = 80;layers_size[2] = 50;layers_size[3] = 16;
+	if (num_layer == 3)
+		{layers_size[0] = 2;layers_size[1] = 4;layers_size[2] = 2;}
+	else
+		{layers_size[0] = 2;layers_size[1] = 80;layers_size[2] = 50;layers_size[3] = 16;}
 
 	function* identity_f = new identity();
 	function* simoigde_f = new simoigde();
@@ -74,9 +79,49 @@ int main()
 #ifndef LOAD_FILE
 	web myweb(num_layer,layers_size,p_input,p_activ,p_outpu,umbral,web_distribution,web_generator);
 #else //LOAD_FILE
-	web myweb = load("20210315162310.dat", p_input, p_activ, p_outpu);
+	web myweb = load("20210316192418.dat", p_input, p_activ, p_outpu);
 #endif //LOAD_FILE
 	double inputs[] = {0.2,0.5};
+	double** inputs_patron;
+	inputs_patron = new double*[4];
+		inputs_patron[0]= new double[2]{0.0,0.0};
+		inputs_patron[1]= new double[2]{1.0,0.0};
+		inputs_patron[2]= new double[2]{0.0,1.0};
+		inputs_patron[3]= new double[2]{1.0,1.0};
+	double** outputs_patron;
+	outputs_patron = new double*[4];
+		outputs_patron[0]= new double[2]{0.0,0.0};
+		outputs_patron[1]= new double[2]{0.0,1.0};
+		outputs_patron[2]= new double[2]{0.0,1.0};
+		outputs_patron[3]= new double[2]{1.0,1.0};
+
+
+	std::thread mythread([&myweb,&inputs_patron,&outputs_patron](){
+		backpropagation::train(
+			myweb,
+			inputs_patron,
+			outputs_patron,
+			4,
+			0.001
+			);
+	});
+
+	cout<<"press enter:"<<endl;
+	std::cin.get();
+	backpropagation::force_end_training();
+
+	mythread.join();
+
+	delete[] inputs_patron[0];
+	delete[] inputs_patron[1];
+	delete[] inputs_patron[2];
+	delete[] inputs_patron[3];
+	delete[] outputs_patron[0];
+	delete[] outputs_patron[1];
+	delete[] outputs_patron[2];
+	delete[] outputs_patron[3];
+	delete[] inputs_patron;
+	delete[] outputs_patron;
 
 	auto start = high_resolution_clock::now(); 	
 	double *outputs = myweb.Evaluate(inputs);
@@ -87,13 +132,13 @@ int main()
 
 	for (unsigned int i = 0; i < output_size; ++i)
 		cout<<"Output "<<i<<":"<<outputs[i]<<endl;
-
+	
 	cout <<"Duration:"<< duration.count() << endl; 
 #ifndef LOAD_FILE
 	save(myweb);
 #endif //LOAD_FILE
 
-	print_web(myweb);
+	//print_web(myweb);
 	cout<<"end"<<endl;
 
 	return 0;
