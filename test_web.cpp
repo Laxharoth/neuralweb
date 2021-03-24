@@ -2,6 +2,7 @@
 #include "web.hpp"
 #include "web_file_handle.hpp"
 #include "backpropagation.hpp"
+#include "bytestoarray.hpp"
 
 #include <iostream>
 #include <cmath>
@@ -37,18 +38,38 @@ class identity : public function
 
 void print_web(web &this_web);
 
-int main()
+int main(int argc, char **argv)
 {
+	#ifdef LOAD_FILE
+	if(argc<2)
+	{
+		std::cout<<"Ingresar archivo de red";
+		return 0;
+	}
+	char* filename = argv[1];
+
+	#endif //LOAD_FILE
+
+
 	std::uniform_real_distribution<double> web_distribution(0.0,0.3);
 	std::mt19937_64 web_generator(std::chrono::system_clock::now().time_since_epoch().count());
 
-	unsigned int num_layer = 3;
+	int input_size_f{};
+	int output_size_f{};
+	int n_patrons{};
+	double** inputs_patron = bytes2array::file2array("input/Bitcoin.bin",n_patrons,input_size_f);
+	double** output_patron = bytes2array::file2array("output/Bitcoin.bin",n_patrons,output_size_f);
+
+	cout<<input_size_f<<endl;
+	cout<<output_size_f<<endl;
+
+	unsigned int num_layer = 5;
 
 	unsigned int* layers_size = new unsigned int[num_layer];
 	if (num_layer == 3)
 		{layers_size[0] = 2;layers_size[1] = 4;layers_size[2] = 2;}
 	else
-		{layers_size[0] = 2;layers_size[1] = 80;layers_size[2] = 50;layers_size[3] = 16;}
+		{layers_size[0] = input_size_f;layers_size[1] = 30;layers_size[2] = 30;layers_size[3] = 30;layers_size[4] = output_size_f;}
 
 	function* identity_f = new identity();
 	function* simoigde_f = new simoigde();
@@ -79,9 +100,10 @@ int main()
 #ifndef LOAD_FILE
 	web myweb(num_layer,layers_size,p_input,p_activ,p_outpu,umbral,web_distribution,web_generator);
 #else //LOAD_FILE
-	web myweb = load("20210316192418.dat", p_input, p_activ, p_outpu);
+	web myweb = load(filename, p_input, p_activ, p_outpu);
 #endif //LOAD_FILE
 	double inputs[] = {0.2,0.5};
+	/*
 	double** inputs_patron;
 	inputs_patron = new double*[4];
 		inputs_patron[0]= new double[2]{0.0,0.0};
@@ -89,21 +111,22 @@ int main()
 		inputs_patron[2]= new double[2]{0.0,1.0};
 		inputs_patron[3]= new double[2]{1.0,1.0};
 	double** outputs_patron;
-	outputs_patron = new double*[4];
-		outputs_patron[0]= new double[2]{0.0,0.0};
-		outputs_patron[1]= new double[2]{0.0,1.0};
-		outputs_patron[2]= new double[2]{0.0,1.0};
-		outputs_patron[3]= new double[2]{1.0,1.0};
+	output_patron = new double*[4];
+		output_patron[0]= new double[2]{0.0,0.0};
+		output_patron[1]= new double[2]{0.0,1.0};
+		output_patron[2]= new double[2]{0.0,1.0};
+		output_patron[3]= new double[2]{1.0,1.0};
+	*/
 
 
-	std::thread mythread([&myweb,&inputs_patron,&outputs_patron](){
-		backpropagation::train(
+	std::thread mythread([&myweb,&inputs_patron,&output_patron,n_patrons](){
+		std::cout<<backpropagation::train(
 			myweb,
 			inputs_patron,
-			outputs_patron,
-			4,
+			output_patron,
+			n_patrons,
 			0.001
-			);
+			)<<std::endl;
 	});
 
 	cout<<"press enter:"<<endl;
@@ -111,7 +134,7 @@ int main()
 	backpropagation::force_end_training();
 
 	mythread.join();
-
+	/*
 	delete[] inputs_patron[0];
 	delete[] inputs_patron[1];
 	delete[] inputs_patron[2];
@@ -122,7 +145,6 @@ int main()
 	delete[] outputs_patron[3];
 	delete[] inputs_patron;
 	delete[] outputs_patron;
-
 	auto start = high_resolution_clock::now(); 	
 	double *outputs = myweb.Evaluate(inputs);
 	auto stop = high_resolution_clock::now(); 
@@ -134,6 +156,11 @@ int main()
 		cout<<"Output "<<i<<":"<<outputs[i]<<endl;
 	
 	cout <<"Duration:"<< duration.count() << endl; 
+	*/
+
+	bytes2array::freearray(inputs_patron,n_patrons);
+	bytes2array::freearray(output_patron,n_patrons);
+
 #ifndef LOAD_FILE
 	save(myweb);
 #endif //LOAD_FILE
