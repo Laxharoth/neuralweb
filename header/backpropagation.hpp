@@ -9,7 +9,7 @@
 class backpropagation
 {
 public:
-	static void train(web &myweb, double** inputs, double** expected_outputs, unsigned int n_patrons, double permisible_error);
+	static double train(web &myweb, double** inputs, double** expected_outputs, unsigned int n_patrons, double permisible_error);
 	static void force_end_training();
 private:
 

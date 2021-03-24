@@ -6,7 +6,7 @@ const double backpropagation::MOMENTUM_COEFFICIENT= 0.50;
 
 bool backpropagation::end_training=false;
 
-void backpropagation::train(web &myweb, double** inputs, double** expected_outputs, unsigned int n_patrons, double permisible_error)
+double backpropagation::train(web &myweb, double** inputs, double** expected_outputs, unsigned int n_patrons, double permisible_error)
 {
 	backpropagation::end_training = false;
 	layer* current_layer{};
@@ -15,6 +15,7 @@ void backpropagation::train(web &myweb, double** inputs, double** expected_outpu
 	unsigned int layer_num;
 	unsigned int neuron_num;
 	unsigned int inputs_num;
+	unsigned int biggest_layer{};
 
 	double sum_error{};
 	double patron_error{};
@@ -40,12 +41,15 @@ void backpropagation::train(web &myweb, double** inputs, double** expected_outpu
 			current_neuron = current_layer->get_neuron(j);
 			inputs_num = current_neuron->get_inputs_number();
 			previous_delta[i][j] = new double[inputs_num];
+			biggest_layer= (biggest_layer>inputs_num)? biggest_layer:inputs_num;
 			for (int k = 0; k < inputs_num; ++k)
 				previous_delta[i][j][k] = 0;
 			
 		}
 	}
 
+	threads = new std::thread[biggest_layer];
+	
 	while( !backpropagation::end_training )
 	{	
 		sum_error = 0;
@@ -62,10 +66,8 @@ void backpropagation::train(web &myweb, double** inputs, double** expected_outpu
 			sum_error+=patron_error;
 
 			//para la capa de salida
-			next_layer = current_layer;
 			current_layer = myweb.get_layer(layer_num-1);
 			neuron_num=current_layer->get_layer_size();
-			threads = new std::thread[neuron_num];
 
 			for (unsigned int i = 0; i < neuron_num; ++i)
 				threads[i] = std::thread([&current_layer,&expected_outputs,&previous_delta,&deltas,layer_num,i]()
@@ -79,17 +81,16 @@ void backpropagation::train(web &myweb, double** inputs, double** expected_outpu
 			for (int i = 0; i < neuron_num; ++i)
 				threads[i].join();
 
-			delete[] threads;
 
 			//para las capas ocultas
 			for (unsigned int i = layer_num-2; i > 0; --i)
 			{
+				next_layer = current_layer;
 				current_layer = myweb.get_layer(i);
 				neuron_num=current_layer->get_layer_size();
-				threads = new std::thread[neuron_num];
 
 				for (unsigned int j = 0; j < neuron_num; ++j)
-					threads[j] = std::thread([&current_layer,&previous_delta,&deltas,i,j,&next_layer]()
+					threads[j] = std::thread([&current_layer,&previous_delta,&deltas,i,j,next_layer]()
 					{
 						backpropagation::neuron_update(
 						current_layer->get_neuron(j),
@@ -102,12 +103,13 @@ void backpropagation::train(web &myweb, double** inputs, double** expected_outpu
 
 				for (int j = 0; j < neuron_num; ++j)
 					threads[j].join();
-
-				delete[] threads;
 			}
 		}
 		backpropagation::end_training = backpropagation::end_training || (sum_error < permisible_error);
 	}
+
+	delete[] threads;
+
 
 	save(myweb);
 
@@ -124,6 +126,8 @@ void backpropagation::train(web &myweb, double** inputs, double** expected_outpu
 	}
 	delete[] previous_delta;
 	delete[] deltas;
+
+	return sum_error;
 }
 
 void backpropagation::neuron_update(neuron* toupdate,double expected_output,double* previous_delta, double &delta)
