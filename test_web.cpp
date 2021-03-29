@@ -24,7 +24,7 @@ class simoigde : public function
 	public:
 	virtual double evaluate(double x)
 	{
-		return 1/(  1+( 1/std::pow(e,x) );  )
+		return 1/(  1+( 1/std::pow(e,x) )  );
 	}
 };
 class identity : public function
