@@ -106,6 +106,9 @@ double backpropagation::train(web &myweb, double** inputs, double** expected_out
 			}
 		}
 		backpropagation::end_training = backpropagation::end_training || (sum_error < permisible_error);
+		#ifdef 	KEEP_IT_SHORT
+		backpropagation::end_training=true;
+		#endif //	KEEP_IT_SHORT
 	}
 
 	delete[] threads;
