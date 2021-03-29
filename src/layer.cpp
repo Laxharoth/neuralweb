@@ -43,7 +43,7 @@ previous_layer_neurons_number(p_previous_layer_neurons_number)
 }
 layer::layer(unsigned int p_neuron_number,function** p_function_input, function** p_function_activation, function** p_function_output, double* p_umbral):
 neurons_number(p_neuron_number),
-previous_layer_neurons_number(FIRST_LAYER_PREVIOUS_NEURON_NUMBER)
+previous_layer_neurons_number(p_neuron_number)
 {
 	this->neurons = new neuron*[this->neurons_number];
 	this->inputs  = new double[this->previous_layer_neurons_number];
@@ -58,7 +58,7 @@ previous_layer_neurons_number(FIRST_LAYER_PREVIOUS_NEURON_NUMBER)
 			p_function_activation[i],
 			p_function_output[i],
 			this->inputs+i,
-			this->previous_layer_neurons_number,
+			FIRST_LAYER_PREVIOUS_NEURON_NUMBER,
 			p_umbral[i],
 			weights
 			);
