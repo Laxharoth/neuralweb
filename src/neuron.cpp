@@ -6,10 +6,10 @@ activation_function(p_activation_function),
 output_function(p_output_function),
 inputs(p_inputs),
 previous_layer_neurons_number(p_previous_layer_neurons_number),
-umbral(p_umbral)
+umbral(p_umbral),
+last_activation(0.0)
 {
 	const int v_prev_layer_size = this->previous_layer_neurons_number;
-	this->last_activation = 0.0;
 	this->weights = new double[v_prev_layer_size];
 	for (unsigned int i = 0; i < (v_prev_layer_size); ++i)
 		weights[i] = distribution(generator);
@@ -20,12 +20,11 @@ activation_function(p_activation_function),
 output_function(p_output_function),
 inputs(p_inputs),
 previous_layer_neurons_number(p_previous_layer_neurons_number),
-umbral(p_umbral)
+umbral(p_umbral),
+last_activation(0.0)
 {
-	const int v_prev_layer_size = this->previous_layer_neurons_number;
-	this->last_activation = 0.0;
-	this->weights = new double[v_prev_layer_size];
-	std::memcpy(this->weights,p_weights,sizeof(double)*v_prev_layer_size);
+	this->weights = new double[(this->previous_layer_neurons_number)];
+	std::memcpy(this->weights,p_weights,sizeof(double)*(this->previous_layer_neurons_number));
 }
 neuron::~neuron()
 {
