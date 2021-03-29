@@ -24,7 +24,7 @@ class simoigde : public function
 	public:
 	virtual double evaluate(double x)
 	{
-		return 1/(1+std::pow(e,-x));
+		return 1/(  1+( 1/std::pow(e,x) );  )
 	}
 };
 class identity : public function
@@ -76,9 +76,9 @@ int main(int argc, char **argv)
 	function*** p_input =  new function**[num_layer];
 	function*** p_activ =  new function**[num_layer];
 	function*** p_outpu =  new function**[num_layer];
-
+	#ifndef LOAD_FILE
 	double** umbral = new double*[num_layer];
-
+	#endif //LOAD_FILE
 	for(unsigned int i = 0; i < num_layer; ++i)
 	{
 		p_input[i] = new function*[layers_size[i]];
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 			p_activ[i][j] = simoigde_f;
 			p_outpu[i][j] = identity_f;
 			#ifndef LOAD_FILE
-			umbral[i][j]  = 0.5;
+			umbral[i][j]  = 0.0;
 			#endif //LOAD_FILE
 		}
 	}
@@ -102,8 +102,9 @@ int main(int argc, char **argv)
 #else //LOAD_FILE
 	web myweb = load(filename, p_input, p_activ, p_outpu);
 #endif //LOAD_FILE
-	double inputs[] = {0.2,0.5};
+	delete[] layers_size;
 	/*
+	double inputs[] = {0.2,0.5};
 	double** inputs_patron;
 	inputs_patron = new double*[4];
 		inputs_patron[0]= new double[2]{0.0,0.0};
@@ -157,6 +158,24 @@ int main(int argc, char **argv)
 	
 	cout <<"Duration:"<< duration.count() << endl; 
 	*/
+	
+	for(unsigned int i = 0; i < num_layer; ++i)
+	{
+		#ifndef LOAD_FILE
+		delete[] umbral[i];
+		#endif //LOAD_FILE
+		delete[] p_input[i];
+		delete[] p_activ[i];
+		delete[] p_outpu[i];
+	}
+	#ifndef LOAD_FILE
+	delete[] umbral;
+	#endif //LOAD_FILE
+	delete[] p_input;
+	delete[] p_activ;
+	delete[] p_outpu;
+	delete identity_f;
+	delete simoigde_f;
 
 	bytes2array::freearray(inputs_patron,n_patrons);
 	bytes2array::freearray(output_patron,n_patrons);
