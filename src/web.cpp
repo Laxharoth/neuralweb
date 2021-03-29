@@ -1,5 +1,4 @@
 #include "web.hpp"
-
 web::web(unsigned int p_num_layers,unsigned int* p_layers_size, function*** p_function_input, function*** p_function_activation, function*** p_function_output,double** p_umbral,rand_dist &distribution,rand_gen &generator):
 num_layers(p_num_layers),
 input_size(p_layers_size[0]),
@@ -37,7 +36,7 @@ web::~web()
 	for (int i = 0; i < this->num_layers; ++i)
 		delete this->layers[i];
 	delete[] this->layers;
-	delete[] this->inputs[this->output_size];
+	delete[] this->inputs[this->num_layers];
 	delete[] this->inputs;
 }
 
