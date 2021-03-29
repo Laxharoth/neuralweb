@@ -4,7 +4,12 @@ void save(web &myweb)
 {
 	const int filename_buffer_size  = 26;
 	char filename_buffer[filename_buffer_size];
+	#ifdef _WIN32
 	const char* format = "backup\\%Y%m%d%H%M%S.dat\0";
+	#endif
+	#ifdef __unix__
+	const char* format = "backup/%Y%m%d%H%M%S.dat\0";
+	#endif
 	auto current_time_chrono = std::chrono::system_clock::now();
 	std::time_t current_time = std::chrono::system_clock::to_time_t(current_time_chrono);
 	std::strftime(filename_buffer,filename_buffer_size,format, std::localtime(&current_time));
