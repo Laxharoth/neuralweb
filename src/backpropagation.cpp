@@ -1,6 +1,7 @@
 #include "backpropagation.hpp"
 #include "web_file_handle.hpp"
 #include <cmath>
+
 const double backpropagation::LEARNING_COEFFICIENT= 0.01;
 const double backpropagation::MOMENTUM_COEFFICIENT= 0.50;
 
@@ -17,7 +18,7 @@ double backpropagation::train(web &myweb, double** inputs, double** expected_out
 	unsigned int inputs_num;
 	unsigned int biggest_layer{};
 
-	double sum_error{};
+	double max_error{};
 	double patron_error{};
 	double*** previous_delta{};
 	double** deltas{};
@@ -52,7 +53,7 @@ double backpropagation::train(web &myweb, double** inputs, double** expected_out
 	
 	while( !backpropagation::end_training )
 	{	
-		sum_error = 0;
+		max_error = 0;
 		iteration++;
 		for (unsigned int i = 0; i < n_patrons; ++i)
 		{
@@ -63,7 +64,7 @@ double backpropagation::train(web &myweb, double** inputs, double** expected_out
 				//if(std::isnan(myoutputs[j]))std::cout<<iteration<<std::endl;
 				patron_error += std::pow(expected_outputs[i][j] - myoutputs[j],2);
 			}
-			sum_error+=patron_error;
+			max_error=std::max(patron_error,max_error);
 
 			//para la capa de salida
 			current_layer = myweb.get_layer(layer_num-1);
@@ -105,7 +106,7 @@ double backpropagation::train(web &myweb, double** inputs, double** expected_out
 					threads[j].join();
 			}
 		}
-		backpropagation::end_training = backpropagation::end_training || (sum_error < permisible_error);
+		backpropagation::end_training = backpropagation::end_training || (max_error < permisible_error);
 		#ifdef 	KEEP_IT_SHORT
 		backpropagation::end_training=true;
 		#endif //	KEEP_IT_SHORT
@@ -130,7 +131,7 @@ double backpropagation::train(web &myweb, double** inputs, double** expected_out
 	delete[] previous_delta;
 	delete[] deltas;
 
-	return sum_error;
+	return max_error;
 }
 
 void backpropagation::neuron_update(neuron* toupdate,double expected_output,double* previous_delta, double &delta)

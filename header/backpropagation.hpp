@@ -5,6 +5,7 @@
 
 #include <cmath>
 #include <thread>
+#include <algorithm>
 
 class backpropagation
 {
