@@ -16,8 +16,8 @@ public:
 	function* activation_function;
 	function* output_function;
 
-	neuron(function* p_input_function, function* p_activation_function, function* p_output_function, double* p_inputs, unsigned int p_previous_layer_neurons_number, double p_umbral,rand_dist &distribution,rand_gen &generator);
-	neuron(function* p_input_function, function* p_activation_function, function* p_output_function, double* p_inputs, unsigned int p_previous_layer_neurons_number, double p_umbral, double* p_weights);
+	neuron(function* p_input_function, function* p_activation_function, function* p_output_function, double* p_inputs, unsigned int p_inputs_number, double p_umbral,rand_dist &distribution,rand_gen &generator);
+	neuron(function* p_input_function, function* p_activation_function, function* p_output_function, double* p_inputs, unsigned int p_inputs_number, double p_umbral, double* p_weights);
 	~neuron();
 	
 	double Input();
@@ -31,7 +31,7 @@ public:
 	double get_last_activation();
 
 private:
-	unsigned int previous_layer_neurons_number;
+	unsigned int inputs_number;
 	double* weights;
 	double* inputs;
 	double umbral;

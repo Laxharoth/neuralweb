@@ -1,13 +1,13 @@
 #include "layer.hpp"
 
-const unsigned int layer::FIRST_LAYER_PREVIOUS_NEURON_NUMBER=1;
+const unsigned int layer::FIRST_LAYER_INPUTS_NUMBER=1;
 
-layer::layer(unsigned int p_neuron_number,function** p_function_input, function** p_function_activation, function** p_function_output, double* p_umbral, unsigned int p_previous_layer_neurons_number,rand_dist &distribution,rand_gen &generator):
+layer::layer(unsigned int p_neuron_number,function** p_function_input, function** p_function_activation, function** p_function_output, double* p_umbral, unsigned int p_inputs_number,rand_dist &distribution,rand_gen &generator):
 neurons_number(p_neuron_number),
-previous_layer_neurons_number(p_previous_layer_neurons_number)
+inputs_number(p_inputs_number)
 {
 	this->neurons = new neuron*[p_neuron_number];
-	this->inputs  = new double[p_previous_layer_neurons_number];
+	this->inputs  = new double[p_inputs_number];
 	
 	for (unsigned int i = 0; i < this->neurons_number; ++i)
 	{
@@ -15,19 +15,19 @@ previous_layer_neurons_number(p_previous_layer_neurons_number)
 			p_function_activation[i],
 			p_function_output[i],
 			this->inputs,
-			this->previous_layer_neurons_number,
+			this->inputs_number,
 			p_umbral[i],
 			distribution,
 			generator
 		);
 	}
 }
-layer::layer(unsigned int p_neuron_number,function** p_function_input, function** p_function_activation, function** p_function_output, double* p_umbral, unsigned int p_previous_layer_neurons_number, double** p_weights):
+layer::layer(unsigned int p_neuron_number,function** p_function_input, function** p_function_activation, function** p_function_output, double* p_umbral, unsigned int p_inputs_number, double** p_weights):
 neurons_number(p_neuron_number),
-previous_layer_neurons_number(p_previous_layer_neurons_number)
+inputs_number(p_inputs_number)
 {
 	this->neurons = new neuron*[this->neurons_number];
-	this->inputs  = new double[this->previous_layer_neurons_number];
+	this->inputs  = new double[this->inputs_number];
 
 	for (unsigned int i = 0; i < p_neuron_number; ++i)
 	{
@@ -35,7 +35,7 @@ previous_layer_neurons_number(p_previous_layer_neurons_number)
 			p_function_activation[i],
 			p_function_output[i],
 			this->inputs,
-			this->previous_layer_neurons_number,
+			this->inputs_number,
 			p_umbral[i],
 			p_weights[i]
 		);
@@ -43,13 +43,13 @@ previous_layer_neurons_number(p_previous_layer_neurons_number)
 }
 layer::layer(unsigned int p_neuron_number,function** p_function_input, function** p_function_activation, function** p_function_output, double* p_umbral):
 neurons_number(p_neuron_number),
-previous_layer_neurons_number(p_neuron_number)
+inputs_number(p_neuron_number)
 {
 	this->neurons = new neuron*[this->neurons_number];
-	this->inputs  = new double[this->previous_layer_neurons_number];
+	this->inputs  = new double[this->inputs_number];
 	
-	double weights[this->previous_layer_neurons_number]{};
-	for (unsigned int i = 0; i < this->previous_layer_neurons_number; ++i) 
+	double weights[this->inputs_number]{};
+	for (unsigned int i = 0; i < this->inputs_number; ++i) 
 		weights[i] = 1.0;
 
 	for (unsigned int i = 0; i < this->neurons_number; ++i)
@@ -58,7 +58,7 @@ previous_layer_neurons_number(p_neuron_number)
 			p_function_activation[i],
 			p_function_output[i],
 			this->inputs+i,
-			FIRST_LAYER_PREVIOUS_NEURON_NUMBER,
+			FIRST_LAYER_INPUTS_NUMBER,
 			p_umbral[i],
 			weights
 			);
@@ -83,7 +83,7 @@ double* layer::get_inputs()
 }
 void layer::set_inputs(double* p_inputs)
 {
-	std::memcpy(this->inputs,p_inputs,sizeof(double)*(this->previous_layer_neurons_number));
+	std::memcpy(this->inputs,p_inputs,sizeof(double)*(this->inputs_number));
 }
 void layer::put_outputs(double* outputs)
 {
